@@ -8,11 +8,26 @@
 from typing import List
 class Solution:
     def findMinArrowShots(self, points: List[List[int]]) -> int:
+        if not points:
+            return 0
+        points.sort(key=lambda a:a[1])
+        i = 1
+        ans = 1
+        right = points[0][1]
+        while i < len(points):
+            if points[i][0] > right:
+                right = points[i][1]
+                ans += 1
+            i += 1
+        return ans
 
 
 
 
 
-points = [[10,16],[2,8],[1,6],[7,12]]
+
+
+
+points = [[2,3],[2,3]]
 solution = Solution()
 print(solution.findMinArrowShots(points))
