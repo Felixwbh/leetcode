@@ -6,20 +6,26 @@
 from typing import List
 class Solution:
     def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
+        flowerbed2 = [0] + flowerbed + [0]
+        i = 1
+        tmp = 0
+        while i <= len(flowerbed) :
+            if flowerbed2[i] == flowerbed2[i + 1] == flowerbed2[i - 1] == 0:
+                tmp += 1
+                i += 2
+            else:
+                i += 1
+        if tmp >= n:
+            return True
+        else:
+            return False
 
 
 
 
 
 
-
-
-
-
-
-
-
-flowerbed = [1,0,0,0,0,0,1]
+flowerbed = [0,0,1,0,1]
 n = 2
 solution = Solution()
 print(solution.canPlaceFlowers(flowerbed, n))
