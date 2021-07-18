@@ -1,0 +1,185 @@
+
+.回文数
+# https://leetcode-cn.com/problems/palindrome-number/
+# 判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
+class Solution(object):
+    def isPalindrome(self, x):
+        x = str(x)
+        for i in range(len(x)/2):
+            if x[i] != x[len(x)-1-i]:
+                return False
+        return True
+
+
+.最长公共前缀
+# https://leetcode-cn.com/problems/longest-common-prefix/submissions/
+# 查找字符串数组中的最长公共前缀。如果不存在公共前缀，返回空字符串""。
+# 输入: ["flower","flow","flight"]
+# 输出: "fl"
+class Solution(object):
+    def longestCommonPrefix(self, strs):
+        res = ""
+        for each in zip(*strs):
+            if len(set(each)) == 1:
+                res += each[0]
+            else:
+                break
+        return res
+
+class Solution(object):
+    def longestCommonPrefix(self, strs):
+        if len(strs) == 0:
+            return ""
+        res = ""
+        for i in range(len(strs[0])):
+            for j in range(1, len(strs)):
+                if i >= len(strs[j]) or strs[0][i] != strs[j][i]:
+                    return res
+            res += strs[0][i]
+        return res
+
+
+.三数之和
+# https://leetcode-cn.com/problems/3sum/
+# 给定一个包含n个整数的数组nums，判断nums中是否存在三个元素a，b，c，使得 a + b + c = 0。 找出所有满足条件且不重复的三元组。
+class Solution(object):
+    def threeSum(self, nums):
+        res = []
+        nums.sort()
+        for i in range(len(nums)-2):
+            if i == 0 or nums[i] > nums[i-1]:
+                left, right = i+1, len(nums)-1
+                while left < right:
+                    if nums[left] + nums[right] == -nums[i]:
+                        res.append([nums[i], nums[left], nums[right]])
+                        left += 1
+                        right -= 1
+                        while left < right and nums[left] == nums[left-1]:
+                            left += 1
+                        while left < right and nums[right] == nums[right+1]:
+                            right -= 1
+                    elif nums[left] + nums[right] < -nums[i]:
+                        while left < right:
+                            left += 1
+                            if nums[left] > nums[left-1]:
+                                break
+                    else:
+                        while left < right:
+                            right -= 1
+                            if nums[right] < nums[right+1]:
+                                break
+        return res
+
+
+.有效的括号
+# https://leetcode-cn.com/problems/valid-parentheses/
+# 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效。
+class Solution(object):
+    def isValid(self, s):
+        stack = []
+        for i in range(len(s)):
+            if s[i] == '(' or s[i] == '[' or s[i] == '{':
+                stack.append(s[i])
+            if not stack:
+                return False
+            if s[i] == ')' and stack.pop() != '(':
+                return False
+            if s[i] == ']' and stack.pop() != '[':
+                return False
+            if s[i] == '}' and stack.pop() != '{':
+                return False
+            
+        if not stack:
+            return True
+        else:
+            return False
+
+
+.格雷编码
+# https://leetcode-cn.com/problems/gray-code/
+# 格雷编码是一个二进制数字系统，系统中两个连续的数值仅有一个位数的差异。给定非负整数n，打印其格雷编码序列。格雷编码序列必须以0开头。
+class Solution(object):
+    def grayCode(self, n):
+        res = []
+        for i in range(2 ** n):
+            res.append((i >> 1) ^ i)
+        return res
+
+
+
+
+
+.反转字符串
+# https://leetcode-cn.com/problems/reverse-string/
+# 将输入的字符串反转过来。输入字符串以字符数组char[]的形式给出。必须原地修改输入数组、使用O(1)的额外空间解决问题。
+class Solution(object):
+    def reverseString(self, s):
+        left, right = 0, len(s)-1
+        while left < right:
+            s[left], s[right] = s[right], s[left]
+            left += 1
+            right -= 1
+
+class Solution(object):
+    def reverseString(self, s):
+        s[:] = s[::-1]
+
+
+.LRU缓存机制
+# https://leetcode-cn.com/problems/lru-cache/
+# 实现 LRU(最近最少使用) 缓存机制。支持以下操作： 获取数据get和写入数据put。
+# 获取数据 get(key) - 如果key存在，则返回value（总是正数），否则返回-1。
+# 写入数据 put(key, value) - 如果key不存在，则写入value。当缓存容量达到上限时，应该在写入key-value前删除最近最少使用的数据值，为新数据值留出空间。
+from collections import OrderedDict
+
+class LRUCache(object):
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+        
+    def get(self, key):
+        # 查询，若命中则返回key对应的value，否则返回-1；删除命中的节点，将其重新插入到尾部
+        if key not in self.cache:
+            return -1
+        value = self.cache[key]
+        self.cache.pop(key)
+        self.cache[key] = value
+        return value
+        
+    def put(self, key, value):
+        # 插入，如果cache满了，删除头部节点，将新节点插入到尾部
+        if key in self.cache:
+            self.cache.pop(key)
+            self.cache[key] = value
+        else:
+            if len(self.cache) == self.capacity:
+                self.cache.popitem(last=False)
+            self.cache[key] = value
+
+
+.2的幂
+# https://leetcode-cn.com/problems/power-of-two/
+# 给定一个整数，判断它是否是2的幂次方。
+class Solution:
+    def isPowerOfTwo(self, n):
+        # 2的幂，一个1后面若干0
+        return n > 0 and not (n & n-1)
+
+
+
+.合法数独
+# 
+def fun(board):
+    rows = [list(lst[::]) for lst in board]
+    cols = [[lst[idx] for lst in board] for idx in range(9)]
+    blos_ori = [board[row][col] for x in [[0,1,2],[3,4,5],[6,7,8]] for y in [[0,1,2],[3,4,5],[6,7,8]] for row in x for col in y]
+    blos = [[blos_ori[row*9+col] for col in range(9)] for row in range(9)]
+    check = lambda lst: all([lst.count(x) == 1 for x in lst if x != 'X'])
+    return all([check(x) for s in (rows, cols, blos) for x in s])
+
+
+
+
+
+

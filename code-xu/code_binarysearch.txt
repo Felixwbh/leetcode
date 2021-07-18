@@ -1,0 +1,227 @@
+
+.在排序数组中, 二分查找返回目标元素k的第一位, 不存在返回-1
+def getFirst(self, nums, k):
+    left, right = 0, len(nums)-1
+    while left < right:
+        mid = left + (right - left) / 2
+        if nums[mid] < k:
+            left = mid + 1
+        else:
+            right = mid
+    if nums[left] == k:
+        return left
+    else:
+        return -1
+
+
+.在排序数组中, 二分查找返回目标元素k的最后一位, 不存在返回-1
+def getLast(self, nums, k):
+    left, right = 0, len(nums)-1
+    while left < right:
+        mid = left + (right - left + 1) / 2  # !!!
+        if nums[mid] > k:
+            right = mid - 1
+        else:
+            left = mid
+    if nums[left] == k:
+        return left
+    else:
+        return -1
+
+
+.在排序数组中, 二分查找返回目标元素k的第一位的前一位, 不存在返回-1
+def getFirstPre(self, nums, k):
+    left, right = 0, len(nums) - 1
+    while left < right:
+        mid = left + (right - left + 1) / 2  # !!!
+        if nums[mid] < k:
+            left = mid
+        else:
+            right = mid - 1
+    if nums[left] < k:
+        return left
+    else:
+        return -1
+
+
+.在排序数组中, 二分查找返回目标元素k的最后一位的后一位, 不存在返回-1
+def getLastPost(self, nums, k):
+    left, right = 0, len(nums) - 1
+    while left < right:
+        mid = left + (right - left) / 2
+        if nums[mid] > k:
+            right = mid
+        else:
+            left = mid + 1
+    if nums[left] > k:
+        return left
+    else:
+        return -1  # return len(nums)
+
+
+.数字在排序数组中出现的次数
+# https://www.nowcoder.com/practice/70610bf967994b22bb1c26f9ae901fa2?tpId=13&tqId=11190&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
+# 统计一个数字在排序数组中出现的次数。
+class Solution:
+    def GetNumberOfK(self, data, k):
+        # write code here
+        try:
+            first = self.getFirst(data, k)
+            last = self.getLast(data, k)
+            if first > -1 and last > -1:
+                return last - first + 1
+            return 0
+        except:
+            return 0
+    
+    def getFirst(self, nums, target):
+        left, right = 0, len(nums) - 1
+        while left < right:
+            mid = left + (right - left) / 2
+            if nums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid
+        if nums[left] == target:
+            return left
+        else:
+            return -1
+        
+    def getLast(self, nums, target):
+        left, right = 0, len(nums) - 1
+        while left < right:
+            mid = left + (right - left + 1) / 2
+            if nums[mid] > target:
+                right = mid - 1
+            else:
+                left = mid
+        if nums[left] == target:
+            return left
+        else:
+            return -1
+
+
+.旋转数组的最小数字
+# https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&tqId=11159&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
+# 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。 输入一个非减排序的数组的一个旋转，输出旋转数组的最小元素。 例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。 NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
+class Solution:
+    def minNumberInRotateArray(self, rotateArray):
+        # write code here
+        if len(rotateArray) == 0:
+            return 0
+        left, right = 0, len(rotateArray)-1
+        while left < right:
+            mid = left + (right - left) / 2
+            if rotateArray[mid] > rotateArray[right]:
+                left = mid + 1
+            elif rotateArray[mid] < rotateArray[right]:
+                right = mid
+            else:
+                right -= 1  # li = [1,1,1,1,0,1]
+        return rotateArray[left]
+
+
+.搜索旋转排序数组
+# https://leetcode-cn.com/problems/search-in-rotated-sorted-array/
+# 假设按照升序排序的数组在预先未知的某个点上进行了旋转。(例如，数组[0,1,2,4,5,6,7]可能变为[4,5,6,7,0,1,2])。
+# 给定目标值，如果数组中存在这个目标值，则返回它的索引，否则返回-1。假设数组中不存在重复的元素。算法时间复杂度必须是 O(log n) 级别。
+# 输入: nums = [4,5,6,7,0,1,2], target = 0
+# 输出: 4
+class Solution(object):
+    def search(self, nums, target):
+        left, right = 0, len(nums) - 1
+        while left <= right:  # while循环中存在return可以取等号
+            mid = left + (right - left) / 2
+            if nums[mid] == target:
+                return mid
+            if nums[mid] >= nums[left]:
+                if nums[left] <= target <= nums[mid]:
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            if nums[mid] <= nums[right]:
+                if nums[mid] <= target <= nums[right]:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+        return -1
+
+
+.寻找两个有序数组的中位数
+# https://leetcode-cn.com/problems/median-of-two-sorted-arrays/submissions/
+# 给定两个大小为m和n的有序数组nums1和nums2。请找出这两个有序数组的中位数，要求时间复杂度为 O(log(m + n))。假设nums1和nums2不同时为空。
+# 输入: nums1 = [1, 2], nums2 = [3, 4]
+# 输出: 中位数是 (2 + 3)/2 = 2.5
+# nums1     0 ~ i-1     i - m-1
+# nums2     0 ~ j-1     j - n-1
+# n >= m 保证j不为负数;
+# 1) i > 0 and j < n and nums1[i-1] > nums2[j];
+# 2) j > 0 and i < m and nums2[j-1] > nums1[i];
+# 3) nums1[i-1] <= nums2[j] and nums2[j-1] <= nums1[i];
+# m + n 为奇数, return max(nums1[i-1], nums2[j-1]);
+# m + n 为偶数, return (max(nums1[i-1], nums2[j-1]) + min(nums1[i], nums2[j])) / 2.0
+class Solution(object):
+    def findMedianSortedArrays(self, nums1, nums2):
+        m, n = len(nums1), len(nums2)
+        if m > n:
+            nums1, nums2, m, n = nums2, nums1, n, m
+        left, right = 0, m
+        while left <= right:
+            i = left + (right - left) / 2
+            j = (m + n + 1) / 2 - i
+            if i > 0 and j < n and nums1[i-1] > nums2[j]:
+                right = i - 1
+            elif j > 0 and i < m and nums2[j-1] > nums1[i]:
+                left = i + 1
+            else:
+                if i == 0:
+                    left_max = nums2[j-1]
+                elif j == 0:
+                    left_max = nums1[i-1]
+                else:
+                    left_max = max(nums1[i-1], nums2[j-1])
+                
+                if (m + n) % 2 == 1:
+                    return left_max
+                
+                if i == m:
+                    right_min = nums2[j]
+                elif j == n:
+                    right_min = nums1[i]
+                else:
+                    right_min = min(nums1[i], nums2[j])
+                
+                return (left_max + right_min) / 2.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,207 @@
+
+.平衡二叉树
+# https://www.nowcoder.com/practice/8b3b95850edb4115918ecebdf1b4d222?tpId=13&tqId=11192&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
+# 输入一棵二叉树，判断该二叉树是否是平衡二叉树。
+# 自顶向下O(N2)
+class Solution:
+    def IsBalanced_Solution(self, pRoot):
+        # write code here
+        if not pRoot:
+            return True
+        return abs(self.TreeDepth(pRoot.left) - self.TreeDepth(pRoot.right)) <= 1 and self.IsBalanced_Solution(pRoot.left) and self.IsBalanced_Solution(pRoot.right)
+    
+    def TreeDepth(self, root):
+        if not root:
+            return 0
+        return max(self.TreeDepth(root.left), self.TreeDepth(root.right)) + 1
+# 自底向上O(N)
+class Solution:
+    def IsBalanced_Solution(self, pRoot):
+        # write code here
+        self.res = True
+        self.dfs(pRoot)
+        return self.res
+    
+    def dfs(self, root):
+        if not root:
+            return 0
+        left = self.dfs(root.left)
+        right = self.dfs(root.right)
+        if abs(left - right) > 1:
+            self.res = False
+        return max(left, right) + 1
+
+
+.二叉树中的最大路径和
+# https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/
+# 给定一个非空二叉树，返回其最大路径和。路径被定义为一条从树中任意节点出发，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+# 对任意一个节点, 如果最大和路径包含该节点, 只存在2种情况:
+# 	左右子树中构成的路径和较大的那个，加上该节点的值后向父节点回溯构成最大路径；
+# 	左右子树都在最大路径中, 加上该节点的值构成最大路径。
+class Solution(object):
+    def maxPathSum(self, root):
+        self.res = float('-inf')
+        self.dfs(root)
+        return self.res
+    
+    def dfs(self, root):
+        if not root:
+            return 0
+        left = max(0, self.dfs(root.left))
+        right = max(0, self.dfs(root.right))
+        self.res = max(self.res, left + right + root.val)
+        return max(left, right) + root.val
+
+
+.二叉树中和为某一值的路径
+# https://www.nowcoder.com/practice/b736e784e3e34731af99065031301bca?tpId=13&tqId=11177&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
+# 输入一颗二叉树的根节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
+class Solution:
+    # 返回二维列表，内部每个列表表示找到的路径
+    def FindPath(self, root, expectNumber):
+        # write code here
+        if not root:
+            return []
+        res = []
+        self.dfs(root, expectNumber, 0, [], res)
+        return res
+    
+    def dfs(self, root, expectNumber, curSum, path, res):
+        curSum += root.val
+        path.append(root)
+        if curSum == expectNumber and not root.left and not root.right:
+            onepath = []
+            for node in path:
+                onepath.append(node.val)
+            res.append(onepath)
+        if curSum < expectNumber:
+            if root.left:
+                self.dfs(root.left, expectNumber, curSum, path, res)
+            if root.right:
+                self.dfs(root.right, expectNumber, curSum, path, res)
+        path.pop()
+
+
+.字符串的排列
+# https://www.nowcoder.com/practice/fe6b651b66ae47d7acce78ffdd9a96c7?tpId=13&tqId=11180&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
+# 输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+class Solution:
+    def Permutation(self, ss):
+        # write code here
+        if not ss:
+            return []
+        res = []
+        self.dfs(ss, '', res)
+        return sorted(list(set(res)))
+    
+    def dfs(self, ss, path, res):
+        if len(ss) == 0:
+            res.append(path)
+        for i in range(len(ss)):
+            self.dfs(ss[:i] + ss[i+1:], path + ss[i], res)
+
+
+.全排列
+# https://leetcode-cn.com/problems/permutations/
+# 给定一个没有重复数字的序列，返回其所有可能的全排列。
+# 输入: [1,2,3]
+# 输出: [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+# https://blog.csdn.net/fuxuemingzhu/article/details/79363903
+class Solution(object):
+    def permute(self, nums):
+        res = []
+        self.dfs(nums, [], res)
+        return res
+    
+    def dfs(self, nums, path, res):
+        if len(nums) == 0:
+            res.append(path)
+        for i in range(len(nums)):
+            self.dfs(nums[:i] + nums[i+1:], path + [nums[i]], res)
+
+
+.子集
+# https://leetcode-cn.com/problems/subsets/
+# 给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+# 输入: nums = [1,2,3]
+# 输出: [[3], [1], [2], [1,2,3], [1,3], [2,3], [1,2], []]
+class Solution(object):
+    def subsets(self, nums):
+        res = []
+        self.dfs(nums, 0, [], res)
+        return res
+    
+    def dfs(self, nums, start, path, res):
+        res.append(path)
+        for i in range(start, len(nums)):
+            self.dfs(nums, i + 1, path + [nums[i]], res)
+
+
+.组合
+# https://leetcode-cn.com/problems/combinations/
+# 给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+# 输入: n = 4, k = 2
+# 输出: [[2,4], [3,4], [2,3], [1,2], [1,3], [1,4]]
+# https://blog.csdn.net/fuxuemingzhu/article/details/79515180
+# 回溯法：抽取第1个字符，从后面n-1个字符抽取k-1个；抽取第2个字符，从后面n-2个字符抽取k-1个...这样循环
+class Solution(object):
+    def combine(self, n, k):
+        nums = range(1, n + 1)
+        res = []
+        self.dfs(nums, k, [], res)
+        return res
+    
+    def dfs(self, nums, k, path, res):
+        if k == 0:
+            res.append(path)
+            return
+        for i in range(len(nums)):
+            self.dfs(nums[i+1:], k - 1, path + [nums[i]], res)
+
+
+.字符串组合
+# 输出给定字符串的组合，n(n<=10)个字符串，每个字符长度小于等于3。
+# 输入: ['abc', 'd', 'ef']
+# 输出: ['ade', 'adf', 'bde', 'bdf', 'cde', 'cdf']
+class Solution(object):
+    def fun(self, nums):
+        res = []
+        self.dfs(nums, 0, len(nums), '', res)
+        return res
+
+    def dfs(self, nums, idx, k, path, res):
+        if k == 0:
+            res.append(path)
+            return
+        for s in nums[idx]:
+            self.dfs(nums, idx + 1, k - 1, path + s, res)
+
+class Solution(object):
+    def fun(self, nums):
+        res = []
+        self.dfs(nums, 0, len(nums), '', res)
+        return res
+
+    def dfs(self, nums, idx, k, path, res):
+        if idx == k:
+            res.append(path)
+            return
+        for s in nums[idx]:
+            self.dfs(nums, idx + 1, k, path + s, res)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

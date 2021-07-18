@@ -1,0 +1,298 @@
+
+.丑数
+# https://www.nowcoder.com/practice/6aa9e04fc3794f68acf8778237ba065b?tpId=13&tqId=11186&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
+# 把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+class Solution:
+    def GetUglyNumber_Solution(self, index):
+        # write code here
+        if index == 0 or index == 1:
+            return index
+        dp = [0, 1]
+        t2, t3, t5 = 1, 1, 1
+        for i in range(2, index + 1):
+            tmp = min(dp[t2]*2, dp[t3]*3, dp[t5]*5)
+            if tmp == dp[t2]*2:
+                t2 += 1
+            if tmp == dp[t3]*3:
+                t3 += 1
+            if tmp == dp[t5]*5:
+                t5 += 1
+            dp.append(tmp)
+        return dp[index]
+
+.最长公共子序列LCS
+# https://leetcode-cn.com/problems/delete-operation-for-two-strings/submissions/
+# https://www.cnblogs.com/CheeseZH/p/8830482.html
+# 递归
+def lcs_recursive(str1, str2):
+    if len(str1) == 0 or len(str2) == 0:
+        return 0
+    if str1[0] == str2[0]:
+        return lcs_recursive(str1[1:], str2[1:]) + 1
+    else:
+        return max(lcs_recursive(str1[1:], str2), lcs_recursive(str1, str2[1:]))
+
+# dp[m][n]
+def lcs_dp(str1, str2):
+    m, n = len(str1), len(str2)
+    if m == 0 or n == 0:
+        return 0
+    dp = [[0] * (n+1) for _ in range(m+1)]
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            if str1[i-1] == str2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    return dp[m][n]
+
+# dp[m][n], lcs
+def lcs_dp(str1, str2):
+    m, n = len(str1), len(str2)
+    if m == 0 or n == 0:
+        return 0
+    dp = [[0] * (n+1) for _ in range(m+1)]
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            if str1[i-1] == str2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    # print lcs
+    i, j = len(str1), len(str2)
+    lcs = ""
+    while i > 0 and j > 0:
+        if str1[i-1] == str2[j-1] and dp[i][j] == dp[i-1][j-1] + 1:
+            lcs = str1[i-1] + lcs
+            i -= 1
+            j -= 1
+        elif dp[i][j] == dp[i-1][j]:
+            i -= 1
+        elif dp[i][j] == dp[i][j-1]:
+            j -= 1
+    print(lcs)
+    return dp[m][n]
+
+.最长公共子串LCS
+# https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/
+# https://www.cnblogs.com/CheeseZH/p/8830482.html
+# dp
+def lcs_dp(str1, str2):
+    m, n = len(str1), len(str2)
+    if m == 0 or n == 0:
+        return 0
+    dp = [[0] * (n+1) for _ in range(m+1)]
+    max_len = 0
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            if str1[i-1] == str2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+                max_len = max(max_len, dp[i][j])
+            else:
+                dp[i][j] = 0
+    return max_len
+
+# dp, lcs
+def lcs_dp(str1, str2):
+    m, n = len(str1), len(str2)
+    if m == 0 or n == 0:
+        return 0
+    dp = [[0] * (n+1) for _ in range(m+1)]
+    max_len = 0
+    lcs = ""
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            if str1[i-1] == str2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+                max_len = max(max_len, dp[i][j])
+                if max_len == dp[i][j]:
+                    lcs = str1[i-max_len:i]
+            else:
+                dp[i][j] = 0
+    print(lcs)
+    return max_len
+
+
+.最大子序和
+https://leetcode-cn.com/problems/maximum-subarray/submissions/
+给定一个整数数组nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+# dp
+class Solution(object):
+    def maxSubArray(self, nums):
+        dp = [0] * len(nums)
+        dp[0] = nums[0]
+        res = dp[0]
+        for i in range(1, len(nums)):
+            if dp[i-1] < 0:
+                dp[i] = nums[i]
+            else:
+                dp[i] = dp[i-1] + nums[i]
+            res = max(res, dp[i])
+        return res
+
+class Solution(object):
+    def maxSubArray(self, nums):
+        res, curSum = nums[0], nums[0]
+        for i in range(1, len(nums)):
+            if curSum < 0:
+                curSum = nums[i]
+            else:
+                curSum += nums[i]
+            res = max(res, curSum)
+        return res
+
+
+.最长回文子串
+# https://leetcode-cn.com/problems/longest-palindromic-substring/
+# 给定一个字符串s，找到s中最长的回文子串。假设s的最大长度为1000。
+# 中心扩展法
+class Solution(object):
+    def longestPalindrome(self, s):
+        if len(s) < 2:
+            return s
+        start, maxlen = 0, 0
+        for i in range(len(s)):
+            left, right = i, i  # 长度为奇数
+            while left >= 0 and right <= len(s)-1 and s[left] == s[right]:
+                left -= 1
+                right += 1
+                if right - left - 1 > maxlen:
+                    maxlen = right - left - 1
+                    start = left + 1
+            
+            left, right = i, i + 1  # 长度为偶数
+            while left >= 0 and right <= len(s)-1 and s[left] == s[right]:
+                left -= 1
+                right += 1
+                if right - left - 1 > maxlen:
+                    maxlen = right - left - 1
+                    start = left + 1
+        
+        return s[start: start + maxlen]
+# dp
+# https://zhuanlan.zhihu.com/p/46756602
+# https://www.jb51.net/article/141362.htm
+# (1) 拆分子问题:
+# 定义dp[i][j]为s[i:j+1]是否为回文子串. 如果是dp[i][j]=1, 否则dp[i][j]=0;
+# 如果s[i:j+1]是一个回文子串, 则s[i+1:j]必定是一个回文子串, 且s[i]==s[j]。
+# (2) dp方程(3个以上字符):
+#     s[i] == s[j] and dp[i+1][j-1], dp[i][j]=1;
+# (3) 考虑边界情况(1个字符和2个字符):
+#     1个字符i==j, dp[i][j]=1;
+#     2个字符i+1=j and s[i] == s[j], dp[i][j]=1.
+class Solution(object):
+    def longestPalindrome(self, s):
+        n = len(s)
+        start, maxlen = 0, 0
+        dp = [[0] * n for _ in range(n)]
+        for j in range(0, n):
+            for i in range(0, j+1):
+                if j - i <= 1:  # 1个字符和2个字符
+                    if s[i] == s[j]:
+                        dp[i][j] = 1
+                else:           # 3个以上字符
+                    if s[i] == s[j] and dp[i+1][j-1]:
+                        dp[i][j] = 1
+                if dp[i][j] == 1 and j - i + 1 > maxlen:
+                    maxlen = j - i + 1
+                    start = i
+        return s[start:start+maxlen]
+
+
+.最长回文子序列
+
+
+.不同路径
+# https://leetcode-cn.com/problems/unique-paths/
+# 一个机器人位于一个m x n的网格左上角，每次只能向下或向右移动一步，试图达到网格右下角。问总共有多少条不同的路径？
+class Solution(object):
+    def uniquePaths(self, m, n):
+        dp = [[0] * n for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if i == 0 or j == 0:
+                    dp[i][j] = 1
+                else:
+                    dp[i][j] = dp[i-1][j] + dp[i][j-1]
+        return dp[m-1][n-1]
+
+
+.买卖股票的最佳时机
+# https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
+# 给定一个数组，第i个元素是一支给定股票第i天的价格。最多只允许完成一笔交易（即买入和卖出一支股票），计算所获取的最大利润。注意不能在买入股票前卖出股票。
+class Solution(object):
+    def maxProfit(self, prices):
+        if len(prices) == 0:
+            return 0
+        minprice, res = prices[0], 0
+        for i in range(1, len(prices)):
+            minprice = min(minprice, prices[i])
+            res = max(res, prices[i] - minprice)
+        return res
+
+
+.买卖股票的最佳时机 II
+# https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/
+# 给定一个数组，第i个元素是一支给定股票第i天的价格。尽可能地完成更多的交易（多次买卖一支股票），计算所获取的最大利润。注意不能同时参与多笔交易（必须在再次购买前出售掉之前的股票）。
+class Solution(object):
+    def maxProfit(self, prices):
+        res = 0
+        for i in range(1, len(prices)):
+            if prices[i] > prices[i-1]:
+                res += prices[i] - prices[i-1]
+        return res
+
+
+.买卖股票的最佳时机 III
+# https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/
+# 给定一个数组，第i个元素是一支给定股票第i天的价格。最多可以完成两笔交易，计算所获取的最大利润。注意不能同时参与多笔交易（必须在再次购买前出售掉之前的股票）。
+
+
+
+.买卖股票的最佳时机 IV
+# https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/
+# 给定一个数组，第i个元素是一支给定股票第i天的价格。最多可以完成k笔交易，计算所获取的最大利润。注意不能同时参与多笔交易（必须在再次购买前出售掉之前的股票）。
+
+
+
+
+
+
+
+
+
+.字符串编辑距离 levenshtein distance
+# 
+def fun(str1, str2):
+    m, n = len(str1)+1, len(str2)+1
+    dp = [[0]*n for _ in range(m)]
+    dp[0][0] = 0
+    for i in range(1, m):
+        dp[i][0] = dp[i-1][0] + 1
+    for j in range(1, n):
+        dp[0][j] = dp[0][j-1] + 1
+    
+    for i in range(1, m):
+        for j in range(1, n):
+            if str1[i-1] == str2[j-1]:
+                dp[i][j] = dp[i-1][j-1]
+            else:
+                dp[i][j] = min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]) + 1
+    return dp[m-1][n-1]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
